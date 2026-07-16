@@ -1,23 +1,5 @@
 /* change these first - the fastest way to make it yours */
 :root {
-  --text: #1c1c1c;        /* near-black text */
-  --background: #faf9f6;  /* off-white page background */
-  --accent: #2f6f8f;      /* the one accent color: links, avatar, highlights */
-  --card: #ffffff;        /* card background */
-  --border: #e6e4de;      /* soft borders */
-  --muted: #55534e;       /* muted text */
-  --gradient-start: #fff4d6;
-  --gradient-middle: #dcefff;
-  --gradient-end: #f8dcff;
-  --gradient-glow-a: rgba(255, 168, 101, 0.46);
-  --gradient-glow-b: rgba(78, 132, 255, 0.32);
-  --gradient-glow-c: rgba(231, 122, 255, 0.28);
-  --font: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --radius: 10px;         /* how rounded the corners are */
-  --space: 1.25rem;       /* base spacing unit */
-}
-
-body.dark {
   --text: #f4f4f4;
   --background: #121212;
   --accent: #7ec8ff;
@@ -30,6 +12,24 @@ body.dark {
   --gradient-glow-a: rgba(255, 255, 255, 0.24);
   --gradient-glow-b: rgba(124, 201, 255, 0.28);
   --gradient-glow-c: rgba(255, 255, 255, 0.18);
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --radius: 10px;         /* how rounded the corners are */
+  --space: 1.25rem;       /* base spacing unit */
+}
+
+body.light {
+  --text: #1c1c1c;        /* near-black text */
+  --background: #faf9f6;  /* off-white page background */
+  --accent: #2f6f8f;      /* the one accent color: links, avatar, highlights */
+  --card: #ffffff;        /* card background */
+  --border: #e6e4de;      /* soft borders */
+  --muted: #55534e;       /* muted text */
+  --gradient-start: #fff4d6;
+  --gradient-middle: #dcefff;
+  --gradient-end: #f8dcff;
+  --gradient-glow-a: rgba(255, 168, 101, 0.46);
+  --gradient-glow-b: rgba(78, 132, 255, 0.32);
+  --gradient-glow-c: rgba(231, 122, 255, 0.28);
 }
 
 /* ---------- base ---------- */
