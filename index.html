@@ -40,12 +40,7 @@
           <button id="close-game" class="close-button" type="button" aria-label="Close game">×</button>
         </div>
         <canvas id="space-game" width="480" height="320"></canvas>
-        <div class="touch-controls" aria-label="Mobile controls">
-          <button id="left-button" class="control-button" type="button" aria-label="Move left">◀</button>
-          <button id="shoot-button" class="control-button" type="button" aria-label="Shoot">●</button>
-          <button id="right-button" class="control-button" type="button" aria-label="Move right">▶</button>
-        </div>
-        <p class="game-help">Use ← → or touch controls to move and press space or tap shoot to fire.</p>
+        <p class="game-help">Use ← → or A/D to move, press W or space to fire, or touch and drag to move with continuous firing.</p>
       </div>
     </div>
 
@@ -309,38 +304,64 @@
     });
 
     window.addEventListener('keydown', (event) => {
-      if (event.key === 'ArrowLeft' || event.key === 'ArrowRight' || event.key === ' ') {
-        keys[event.key] = true;
+      const key = event.key.toLowerCase();
+      if (key === 'arrowleft' || key === 'a') {
+        keys.ArrowLeft = true;
+        event.preventDefault();
+      }
+      if (key === 'arrowright' || key === 'd') {
+        keys.ArrowRight = true;
+        event.preventDefault();
+      }
+      if (key === ' ' || key === 'w') {
+        keys[' '] = true;
         event.preventDefault();
       }
     });
 
-    const leftButton = document.getElementById('left-button');
-    const rightButton = document.getElementById('right-button');
-    const shootButton = document.getElementById('shoot-button');
+    let activePointerId = null;
+    let isTouching = false;
 
-    function setControlKey(key, value) {
-      keys[key] = value;
+    function updateTouchPosition(event) {
+      const rect = canvas.getBoundingClientRect();
+      const pointerX = event.clientX - rect.left;
+      const snapX = Math.max(0, Math.min(canvas.width, pointerX));
+      if (gameState) {
+        gameState.player.x = Math.max(0, Math.min(canvas.width - gameState.player.width, snapX - gameState.player.width / 2));
+      }
+      isTouching = true;
+      keys[' '] = true;
     }
 
-    leftButton?.addEventListener('pointerdown', () => setControlKey('ArrowLeft', true));
-    leftButton?.addEventListener('pointerup', () => setControlKey('ArrowLeft', false));
-    leftButton?.addEventListener('pointerleave', () => setControlKey('ArrowLeft', false));
-    leftButton?.addEventListener('pointercancel', () => setControlKey('ArrowLeft', false));
+    function releaseTouch(event) {
+      if (event.pointerId !== activePointerId) return;
+      activePointerId = null;
+      isTouching = false;
+      keys[' '] = false;
+    }
 
-    rightButton?.addEventListener('pointerdown', () => setControlKey('ArrowRight', true));
-    rightButton?.addEventListener('pointerup', () => setControlKey('ArrowRight', false));
-    rightButton?.addEventListener('pointerleave', () => setControlKey('ArrowRight', false));
-    rightButton?.addEventListener('pointercancel', () => setControlKey('ArrowRight', false));
+    canvas.addEventListener('pointerdown', (event) => {
+      if (event.pointerType === 'touch' || event.pointerType === 'pen') {
+        event.preventDefault();
+        activePointerId = event.pointerId;
+        updateTouchPosition(event);
+        canvas.setPointerCapture(event.pointerId);
+      }
+    });
 
-    shootButton?.addEventListener('pointerdown', () => setControlKey(' ', true));
-    shootButton?.addEventListener('pointerup', () => setControlKey(' ', false));
-    shootButton?.addEventListener('pointerleave', () => setControlKey(' ', false));
-    shootButton?.addEventListener('pointercancel', () => setControlKey(' ', false));
+    canvas.addEventListener('pointermove', (event) => {
+      if (event.pointerId !== activePointerId || !isTouching) return;
+      updateTouchPosition(event);
+    });
+
+    canvas.addEventListener('pointerup', releaseTouch);
+    canvas.addEventListener('pointercancel', releaseTouch);
 
     function resizeCanvas() {
-      const containerWidth = canvas.parentElement?.clientWidth || window.innerWidth;
-      const displayWidth = Math.min(containerWidth, 520);
+      const panel = canvas.parentElement;
+      const viewportWidth = Math.max(window.innerWidth - 32, 0);
+      const panelWidth = panel?.clientWidth || viewportWidth;
+      const displayWidth = Math.min(panelWidth, 520, viewportWidth);
       canvas.style.width = `${displayWidth}px`;
       canvas.style.height = `${Math.round(displayWidth * canvas.height / canvas.width)}px`;
     }
@@ -361,8 +382,15 @@
     resizeCanvas();
 
     window.addEventListener('keyup', (event) => {
-      if (event.key === 'ArrowLeft' || event.key === 'ArrowRight' || event.key === ' ') {
-        keys[event.key] = false;
+      const key = event.key.toLowerCase();
+      if (key === 'arrowleft' || key === 'a') {
+        keys.ArrowLeft = false;
+      }
+      if (key === 'arrowright' || key === 'd') {
+        keys.ArrowRight = false;
+      }
+      if (key === ' ' || key === 'w') {
+        keys[' '] = false;
       }
     });
   </script>
