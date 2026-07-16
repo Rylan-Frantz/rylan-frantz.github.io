@@ -260,6 +260,17 @@ section { padding: calc(var(--space) * 2) 0; }
 
 .card h3 { margin-top: 0; }
 
+.card-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: 0.75rem;
+}
+
+.card-links a {
+  display: block;
+}
+
 /* ---------- gallery ---------- */
 
 .gallery-grid {
