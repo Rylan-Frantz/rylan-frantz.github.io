@@ -40,7 +40,12 @@
           <button id="close-game" class="close-button" type="button" aria-label="Close game">×</button>
         </div>
         <canvas id="space-game" width="480" height="320"></canvas>
-        <p class="game-help">Use ← → to move and press space to shoot.</p>
+        <div class="touch-controls" aria-label="Mobile controls">
+          <button id="left-button" class="control-button" type="button" aria-label="Move left">◀</button>
+          <button id="shoot-button" class="control-button" type="button" aria-label="Shoot">●</button>
+          <button id="right-button" class="control-button" type="button" aria-label="Move right">▶</button>
+        </div>
+        <p class="game-help">Use ← → or touch controls to move and press space or tap shoot to fire.</p>
       </div>
     </div>
 
@@ -88,7 +93,7 @@
     <!-- put your GitHub username in this link -->
     <p>Find me on <a href="https://github.com/Rylan-Frantz">GitHub</a>.</p>
     <!-- this credit line is optional, keep it or delete it -->
-    <p></p> Or contact me at rylanfrantz70@gmail.com</p>
+    <p>Or contact me at rylanfrantz70@gmail.com</p>
   </footer>
 
   <script>
@@ -125,15 +130,6 @@
     let gameStarted = false;
     let gameState = null;
     let animationFrameId = null;
-
-    function startGame() {
-      if (gameStarted) return;
-      gameStarted = true;
-      gameOverlay.hidden = false;
-      gameOverlay.classList.add('is-visible');
-      resetGame();
-      animationFrameId = window.requestAnimationFrame(loop);
-    }
 
     function resetGame() {
       gameState = {
@@ -318,6 +314,51 @@
         event.preventDefault();
       }
     });
+
+    const leftButton = document.getElementById('left-button');
+    const rightButton = document.getElementById('right-button');
+    const shootButton = document.getElementById('shoot-button');
+
+    function setControlKey(key, value) {
+      keys[key] = value;
+    }
+
+    leftButton?.addEventListener('pointerdown', () => setControlKey('ArrowLeft', true));
+    leftButton?.addEventListener('pointerup', () => setControlKey('ArrowLeft', false));
+    leftButton?.addEventListener('pointerleave', () => setControlKey('ArrowLeft', false));
+    leftButton?.addEventListener('pointercancel', () => setControlKey('ArrowLeft', false));
+
+    rightButton?.addEventListener('pointerdown', () => setControlKey('ArrowRight', true));
+    rightButton?.addEventListener('pointerup', () => setControlKey('ArrowRight', false));
+    rightButton?.addEventListener('pointerleave', () => setControlKey('ArrowRight', false));
+    rightButton?.addEventListener('pointercancel', () => setControlKey('ArrowRight', false));
+
+    shootButton?.addEventListener('pointerdown', () => setControlKey(' ', true));
+    shootButton?.addEventListener('pointerup', () => setControlKey(' ', false));
+    shootButton?.addEventListener('pointerleave', () => setControlKey(' ', false));
+    shootButton?.addEventListener('pointercancel', () => setControlKey(' ', false));
+
+    function resizeCanvas() {
+      const containerWidth = canvas.parentElement?.clientWidth || window.innerWidth;
+      const displayWidth = Math.min(containerWidth, 520);
+      canvas.style.width = `${displayWidth}px`;
+      canvas.style.height = `${Math.round(displayWidth * canvas.height / canvas.width)}px`;
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    window.addEventListener('orientationchange', resizeCanvas);
+
+    function startGame() {
+      if (gameStarted) return;
+      gameStarted = true;
+      gameOverlay.hidden = false;
+      gameOverlay.classList.add('is-visible');
+      resetGame();
+      resizeCanvas();
+      animationFrameId = window.requestAnimationFrame(loop);
+    }
+
+    resizeCanvas();
 
     window.addEventListener('keyup', (event) => {
       if (event.key === 'ArrowLeft' || event.key === 'ArrowRight' || event.key === ' ') {

@@ -9,6 +9,9 @@
   --gradient-start: #fff4d6;
   --gradient-middle: #dcefff;
   --gradient-end: #f8dcff;
+  --gradient-glow-a: rgba(255, 168, 101, 0.46);
+  --gradient-glow-b: rgba(78, 132, 255, 0.32);
+  --gradient-glow-c: rgba(231, 122, 255, 0.28);
   --font: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --radius: 10px;         /* how rounded the corners are */
   --space: 1.25rem;       /* base spacing unit */
@@ -24,6 +27,9 @@ body.dark {
   --gradient-start: #081120;
   --gradient-middle: #163c71;
   --gradient-end: #2e8bf8;
+  --gradient-glow-a: rgba(255, 255, 255, 0.24);
+  --gradient-glow-b: rgba(124, 201, 255, 0.28);
+  --gradient-glow-c: rgba(255, 255, 255, 0.18);
 }
 
 /* ---------- base ---------- */
@@ -54,11 +60,12 @@ body::before {
   inset: -20%;
   z-index: -1;
   background:
-    radial-gradient(circle at 15% 20%, rgba(255, 255, 255, 0.55) 0%, transparent 30%),
-    radial-gradient(circle at 85% 80%, rgba(255, 255, 255, 0.35) 0%, transparent 35%),
+    radial-gradient(circle at 15% 20%, var(--gradient-glow-a) 0%, transparent 30%),
+    radial-gradient(circle at 85% 80%, var(--gradient-glow-b) 0%, transparent 35%),
     linear-gradient(135deg, var(--gradient-start), var(--gradient-middle), var(--gradient-end));
   background-size: 220% 220%;
   animation: gradient-shift 14s ease infinite;
+  filter: saturate(1.2);
   pointer-events: none;
 }
 
@@ -204,11 +211,45 @@ section { padding: calc(var(--space) * 2) 0; }
 
 #space-game {
   width: 100%;
+  max-width: 100%;
   height: auto;
   border: 1px solid var(--border);
   border-radius: 8px;
   margin-top: 0.75rem;
   background: linear-gradient(180deg, #020617 0%, #082f49 100%);
+  touch-action: none;
+}
+
+.touch-controls {
+  display: none;
+  gap: 0.75rem;
+  justify-content: space-between;
+  margin-top: 0.75rem;
+}
+
+.control-button {
+  flex: 1 1 0;
+  min-height: 3rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.control-button:active,
+.control-button:focus-visible {
+  transform: scale(0.98);
+  border-color: var(--accent);
+}
+
+@media (hover: none) {
+  .touch-controls {
+    display: flex;
+  }
 }
 
 .game-help {
