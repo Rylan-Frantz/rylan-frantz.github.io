@@ -15,6 +15,7 @@
       <a href="#about">About</a>
       <a href="#projects">Projects</a>
       <a href="#contact">Contact</a>
+      <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle dark mode" aria-pressed="false">🌙 Dark mode</button>
     </nav>
   </header>
 
@@ -41,18 +42,18 @@
       <h2>Projects</h2>
       <div class="project-grid">
         <!-- three project cards: put in your own titles, descriptions, and links -->
-        <article class="card">
+        <article class="card card-ftc">
           <h3>First Tech Challenge</h3>
           <p>I am a member of The Fellowship of the Broom FTC team. I have been on the hardware team for 3 years now. I am also the portfolio and presentation lead for the team.</p>
           <!-- the link is optional, delete the line if there is nothing to link -->
           <a href="https://broomfieldstem.org/ftc" target="_blank" rel="noopener noreferrer">Learn more here</a>
         </article>
-        <article class="card">
+        <article class="card card-volunteer">
           <h3>First Lego League Explore Volunteering</h3>
           <p>I have volunteered to mentor a First Lego League Explore team comprised of 2nd-3rd graders for the past two years.</p>
           <a href="https://broomfieldstem.org/explore" target="_blank" rel="noopener noreferrer">Learn more here</a>
         </article>
-        <article class="card">
+        <article class="card card-mines">
           <h3>School of Mines Internship</h3>
           <p>I am currently an intern at the Colorado School of Mines ARIA robotics lab. Through this internship I have learned a lot about python programming and computer vision.</p>
           <a href="https://www.ariarobotics.com/" target="_blank" rel="noopener noreferrer">Learn more here</a>
@@ -65,10 +66,33 @@
   <footer id="contact">
     <h2>Contact</h2>
     <!-- put your GitHub username in this link -->
-    <p>Find me on <a href="https://github.com/YOUR-USERNAME">GitHub</a>.</p>
+    <p>Find me on <a href="https://github.com/Rylan-Frantz">GitHub</a>.</p>
     <!-- this credit line is optional, keep it or delete it -->
-    <p class="fine-print">Built with GitHub Copilot at CS@Mines.</p>
+    <p></p> Or contact me at rylanfrantz70@gmail.com</p>
   </footer>
 
+  <script>
+    const toggleButton = document.getElementById('theme-toggle');
+    const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const savedTheme = localStorage.getItem('theme');
+    const initialTheme = savedTheme || (prefersDarkScheme ? 'dark' : 'light');
+
+    function applyTheme(theme) {
+      document.body.classList.toggle('dark', theme === 'dark');
+      document.body.classList.toggle('light', theme === 'light');
+      if (toggleButton) {
+        toggleButton.setAttribute('aria-pressed', String(theme === 'dark'));
+        toggleButton.textContent = theme === 'dark' ? '☀️ Light mode' : '🌙 Dark mode';
+      }
+    }
+
+    applyTheme(initialTheme);
+
+    toggleButton?.addEventListener('click', () => {
+      const nextTheme = document.body.classList.contains('dark') ? 'light' : 'dark';
+      localStorage.setItem('theme', nextTheme);
+      applyTheme(nextTheme);
+    });
+  </script>
 </body>
 </html>

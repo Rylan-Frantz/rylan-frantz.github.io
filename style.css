@@ -4,9 +4,20 @@
   --background: #faf9f6;  /* off-white page background */
   --accent: #2f6f8f;      /* the one accent color: links, avatar, highlights */
   --card: #ffffff;        /* card background */
+  --border: #e6e4de;      /* soft borders */
+  --muted: #55534e;       /* muted text */
   --font: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --radius: 10px;         /* how rounded the corners are */
   --space: 1.25rem;       /* base spacing unit */
+}
+
+body.dark {
+  --text: #f4f4f4;
+  --background: #121212;
+  --accent: #7ec8ff;
+  --card: #1e1e1e;
+  --border: #3b3b3b;
+  --muted: #d0cbc0;
 }
 
 /* ---------- base ---------- */
@@ -25,6 +36,7 @@ body {
   line-height: 1.6;
   color: var(--text);
   background: var(--background);
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 a { color: var(--accent); }
@@ -33,7 +45,7 @@ a { color: var(--accent); }
 
 header {
   background: var(--card);
-  border-bottom: 1px solid #e6e4de;
+  border-bottom: 1px solid var(--border);
 }
 
 nav {
@@ -42,6 +54,7 @@ nav {
   padding: var(--space);
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: var(--space);
 }
 
@@ -52,6 +65,22 @@ nav a {
 }
 
 nav a:hover { color: var(--accent); }
+
+.theme-toggle {
+  margin-left: auto;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  font: inherit;
+  padding: 0.45rem 0.8rem;
+}
+
+.theme-toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
 
 /* ---------- main layout: one centered column ---------- */
 
@@ -85,8 +114,7 @@ section { padding: calc(var(--space) * 2) 0; }
 }
 
 .tagline {
-  margin: 0;
-  color: #55534e; /* muted gray for the one-liner */
+  color: var(--muted); /* muted gray for the one-liner */
 }
 
 /* ---------- project cards ---------- */
@@ -100,7 +128,7 @@ section { padding: calc(var(--space) * 2) 0; }
 
 .card {
   background: var(--card);
-  border: 1px solid #e6e4de;
+  border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: var(--space);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
@@ -116,7 +144,7 @@ section { padding: calc(var(--space) * 2) 0; }
 /* ---------- footer ---------- */
 
 footer {
-  border-top: 1px solid #e6e4de;
+  border-top: 1px solid var(--border);
   margin-top: calc(var(--space) * 2);
   padding: calc(var(--space) * 2) var(--space);
   text-align: center;
@@ -124,7 +152,7 @@ footer {
 
 .fine-print {
   font-size: 0.85rem;
-  color: #7a7770;
+  color: var(--muted);
 }
 
 /* one small tweak so the big heading fits on narrow phones */
