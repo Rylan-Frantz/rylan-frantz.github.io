@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- your name goes in the browser tab title too -->
   <title>Your Name</title>
+  <link rel="icon" href="googly_eye_button.jpeg" type="image/jpeg">
+  <link rel="shortcut icon" href="headshot.jpg" type="image/jpeg">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -23,12 +25,23 @@
 
     <section id="hero">
       <!-- swap YN for your initials (or ask Copilot for a real avatar later) -->
-      <img class="avatar" src="headshot.jpg" alt="Rylan">
+      <img id="avatar-trigger" class="avatar" src="headshot.jpg" alt="Rylan">
       <!-- your name goes here -->
       <h1>Rylan</h1>
       <!-- one short line about you, like "Sophomore who builds robots and bakes bread" -->
       <p class="tagline">Hi, I'm Rylan. I'm interested in engineering and computer science.</p>
     </section>
+
+    <div id="game-overlay" class="game-overlay" hidden>
+      <div class="game-panel">
+        <div class="game-header">
+          <h2>Space Invader Clone</h2>
+          <button id="close-game" class="close-button" type="button" aria-label="Close game">×</button>
+        </div>
+        <canvas id="space-game" width="480" height="320"></canvas>
+        <p class="game-help">Use ← → to move and press space to shoot.</p>
+      </div>
+    </div>
 
     <section id="about">
       <h2>About Me</h2>
@@ -92,6 +105,217 @@
       const nextTheme = document.body.classList.contains('dark') ? 'light' : 'dark';
       localStorage.setItem('theme', nextTheme);
       applyTheme(nextTheme);
+    });
+
+    const avatarTrigger = document.getElementById('avatar-trigger');
+    const gameOverlay = document.getElementById('game-overlay');
+    const closeGameButton = document.getElementById('close-game');
+    const canvas = document.getElementById('space-game');
+    const ctx = canvas.getContext('2d');
+    const keys = {};
+
+    let clickCount = 0;
+    let gameStarted = false;
+    let gameState = null;
+    let animationFrameId = null;
+
+    function startGame() {
+      if (gameStarted) return;
+      gameStarted = true;
+      gameOverlay.hidden = false;
+      gameOverlay.classList.add('is-visible');
+      resetGame();
+      animationFrameId = window.requestAnimationFrame(loop);
+    }
+
+    function resetGame() {
+      gameState = {
+        player: {
+          x: canvas.width / 2 - 20,
+          y: canvas.height - 40,
+          width: 40,
+          height: 20,
+          speed: 6
+        },
+        bullets: [],
+        enemies: [],
+        enemyDirection: 1,
+        enemySpeed: 1.4,
+        shootCooldown: 0,
+        score: 0,
+        status: 'playing',
+        lastTimestamp: 0
+      };
+
+      for (let row = 0; row < 4; row += 1) {
+        for (let col = 0; col < 6; col += 1) {
+          gameState.enemies.push({
+            x: 34 + col * 60,
+            y: 40 + row * 34,
+            width: 28,
+            height: 20,
+            alive: true
+          });
+        }
+      }
+    }
+
+    function stopGame() {
+      gameStarted = false;
+      if (animationFrameId) {
+        window.cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+      }
+      gameState = null;
+      gameOverlay.hidden = true;
+      gameOverlay.classList.remove('is-visible');
+    }
+
+    function loop(timestamp) {
+      if (!gameStarted || !gameState) return;
+
+      const delta = Math.min(2, (timestamp - (gameState.lastTimestamp || timestamp)) / 16.67);
+      gameState.lastTimestamp = timestamp;
+
+      if (gameState.status !== 'playing') {
+        render();
+        return;
+      }
+
+      if (keys.ArrowLeft) {
+        gameState.player.x -= gameState.player.speed * delta;
+      }
+      if (keys.ArrowRight) {
+        gameState.player.x += gameState.player.speed * delta;
+      }
+      gameState.player.x = Math.max(0, Math.min(canvas.width - gameState.player.width, gameState.player.x));
+
+      if (keys[' ']) {
+        if (gameState.shootCooldown <= 0) {
+          gameState.bullets.push({ x: gameState.player.x + gameState.player.width / 2 - 2, y: gameState.player.y - 8, width: 4, height: 10 });
+          gameState.shootCooldown = 8;
+        }
+      }
+      gameState.shootCooldown = Math.max(0, gameState.shootCooldown - 1);
+
+      for (let index = gameState.bullets.length - 1; index >= 0; index -= 1) {
+        const bullet = gameState.bullets[index];
+        bullet.y -= 8 * delta;
+        if (bullet.y + bullet.height < 0) {
+          gameState.bullets.splice(index, 1);
+        }
+      }
+
+      const aliveEnemies = gameState.enemies.filter((enemy) => enemy.alive);
+      const edgeHit = aliveEnemies.some((enemy) => enemy.x <= 0 || enemy.x + enemy.width >= canvas.width);
+      if (edgeHit) {
+        gameState.enemyDirection *= -1;
+        aliveEnemies.forEach((enemy) => {
+          enemy.y += 8;
+        });
+      }
+
+      aliveEnemies.forEach((enemy) => {
+        enemy.x += gameState.enemyDirection * gameState.enemySpeed * delta;
+      });
+
+      for (let bulletIndex = gameState.bullets.length - 1; bulletIndex >= 0; bulletIndex -= 1) {
+        const bullet = gameState.bullets[bulletIndex];
+        for (let enemyIndex = aliveEnemies.length - 1; enemyIndex >= 0; enemyIndex -= 1) {
+          const enemy = aliveEnemies[enemyIndex];
+          if (!enemy.alive) continue;
+          if (bullet.x < enemy.x + enemy.width && bullet.x + bullet.width > enemy.x && bullet.y < enemy.y + enemy.height && bullet.y + bullet.height > enemy.y) {
+            enemy.alive = false;
+            gameState.bullets.splice(bulletIndex, 1);
+            gameState.score += 100;
+            break;
+          }
+        }
+      }
+
+      if (aliveEnemies.length === 0) {
+        gameState.status = 'won';
+      } else if (aliveEnemies.some((enemy) => enemy.y + enemy.height >= canvas.height - 24)) {
+        gameState.status = 'lost';
+      }
+
+      render();
+      animationFrameId = window.requestAnimationFrame(loop);
+    }
+
+    function render() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = '#04111f';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = 'rgba(255,255,255,0.8)';
+      for (let i = 0; i < 40; i += 1) {
+        const x = (i * 37) % canvas.width;
+        const y = (i * 53) % canvas.height;
+        ctx.fillRect(x, y, 2, 2);
+      }
+
+      gameState?.enemies.forEach((enemy) => {
+        if (!enemy.alive) return;
+        ctx.fillStyle = '#4ade80';
+        ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(enemy.x + 7, enemy.y + 6, 6, 4);
+        ctx.fillRect(enemy.x + 15, enemy.y + 6, 6, 4);
+      });
+
+      gameState?.bullets.forEach((bullet) => {
+        ctx.fillStyle = '#facc15';
+        ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+      });
+
+      if (gameState) {
+        ctx.fillStyle = '#f8fafc';
+        ctx.font = '16px sans-serif';
+        ctx.fillText(`Score: ${gameState.score}`, 12, 20);
+        ctx.fillText(`Status: ${gameState.status === 'won' ? 'You win!' : gameState.status === 'lost' ? 'Game over' : 'Playing'}`, 12, 44);
+
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(gameState.player.x, gameState.player.y, gameState.player.width, gameState.player.height);
+        ctx.fillRect(gameState.player.x + 10, gameState.player.y - 8, 20, 8);
+      }
+
+      if (gameState?.status !== 'playing') {
+        ctx.fillStyle = 'rgba(2, 6, 23, 0.7)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#f8fafc';
+        ctx.font = 'bold 28px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(gameState.status === 'won' ? 'You Win!' : 'Game Over', canvas.width / 2, canvas.height / 2 - 8);
+        ctx.font = '16px sans-serif';
+        ctx.fillText('Refresh to play again.', canvas.width / 2, canvas.height / 2 + 20);
+        ctx.textAlign = 'start';
+      }
+    }
+
+    avatarTrigger?.addEventListener('click', () => {
+      clickCount += 1;
+      if (clickCount >= 5) {
+        startGame();
+      }
+    });
+
+    closeGameButton?.addEventListener('click', () => {
+      stopGame();
+    });
+
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowLeft' || event.key === 'ArrowRight' || event.key === ' ') {
+        keys[event.key] = true;
+        event.preventDefault();
+      }
+    });
+
+    window.addEventListener('keyup', (event) => {
+      if (event.key === 'ArrowLeft' || event.key === 'ArrowRight' || event.key === ' ') {
+        keys[event.key] = false;
+      }
     });
   </script>
 </body>

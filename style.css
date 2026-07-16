@@ -92,6 +92,10 @@ main {
 
 section { padding: calc(var(--space) * 2) 0; }
 
+#about { padding-bottom: 1rem; }
+
+#projects { padding-top: 1rem; }
+
 /* ---------- hero ---------- */
 
 #hero {
@@ -106,6 +110,71 @@ section { padding: calc(var(--space) * 2) 0; }
   object-fit: cover;
   object-position: center 20%;
   display: block;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.avatar:hover {
+  transform: scale(1.03);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+}
+
+.avatar:active {
+  transform: scale(0.97);
+}
+
+.game-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: var(--space);
+  background: rgba(2, 6, 23, 0.7);
+}
+
+.game-overlay[hidden] {
+  display: none;
+}
+
+.game-panel {
+  width: min(100%, 520px);
+  padding: var(--space);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
+}
+
+.game-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space);
+}
+
+.close-button {
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+#space-game {
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-top: 0.75rem;
+  background: linear-gradient(180deg, #020617 0%, #082f49 100%);
+}
+
+.game-help {
+  margin: 0.75rem 0 0;
+  color: var(--muted);
+  font-size: 0.95rem;
 }
 
 #hero h1 {
