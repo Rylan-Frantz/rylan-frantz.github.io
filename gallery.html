@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Photo Gallery</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="index.html#about">About</a>
+      <a href="index.html#projects">Projects</a>
+      <a href="index.html#contact">Contact</a>
+      <a href="gallery.html">Gallery</a>
+      <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle dark mode" aria-pressed="false">🌙 Dark mode</button>
+    </nav>
+  </header>
+
+  <main>
+    <section>
+      <h1>Photo Gallery</h1>
+      <p>Use this page to showcase pictures with short captions. Replace the sample photos and captions below with your own.</p>
+
+      <div class="gallery-grid">
+        <article class="gallery-card">
+          <img src="year1.jpg" alt="Year 1 Robot">
+          <div class="gallery-caption">
+            <h2>Profile photo</h2>
+            <p>This is the robot that me and my team built for our first season of FTC.</p>
+          </div>
+        </article>
+
+        <article class="gallery-card">
+          <img src="year2.jpeg" alt="Year 2 Robot">
+          <div class="gallery-caption">
+            <h2>Second photo</h2>
+            <p>This is the robot that me and my team built for the Decode season of FTC.</p>
+          </div>
+        </article>
+
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p><a href="index.html">Back to home</a></p>
+  </footer>
+
+  <script>
+    const toggleButton = document.getElementById('theme-toggle');
+    const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const savedTheme = localStorage.getItem('theme');
+    const initialTheme = savedTheme || (prefersDarkScheme ? 'dark' : 'light');
+
+    function applyTheme(theme) {
+      document.body.classList.toggle('dark', theme === 'dark');
+      document.body.classList.toggle('light', theme === 'light');
+      if (toggleButton) {
+        toggleButton.setAttribute('aria-pressed', String(theme === 'dark'));
+        toggleButton.textContent = theme === 'dark' ? '☀️ Light mode' : '🌙 Dark mode';
+      }
+    }
+
+    applyTheme(initialTheme);
+
+    toggleButton?.addEventListener('click', () => {
+      const nextTheme = document.body.classList.contains('dark') ? 'light' : 'dark';
+      localStorage.setItem('theme', nextTheme);
+      applyTheme(nextTheme);
+    });
+  </script>
+</body>
+</html>
